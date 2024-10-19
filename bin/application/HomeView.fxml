@@ -16,14 +16,20 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.HomeController">
+<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.HomeController">
    <children>
       <SplitPane dividerPositions="0.19095477386934673" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="598.0" prefWidth="799.0">
         <items>
           <AnchorPane focusTraversable="true" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0">
                <children>
-                  <Button fx:id="Clear" alignment="CENTER" contentDisplay="CENTER" layoutX="21.0" layoutY="332.0" mnemonicParsing="false" onAction="#ClearForm" prefHeight="35.0" prefWidth="100.0" text="Clear" textAlignment="CENTER" textFill="#9a8021" />
-                  <Button fx:id="Exit" alignment="CENTER" contentDisplay="CENTER" layoutX="21.0" layoutY="383.0" mnemonicParsing="false" onAction="#ExitApp" prefHeight="35.0" prefWidth="100.0" text="Exit" textFill="#9a8021" />
+                  <Button fx:id="Clear" alignment="CENTER" contentDisplay="CENTER" layoutX="21.0" layoutY="332.0" mnemonicParsing="false" onAction="#ClearForm" prefHeight="35.0" prefWidth="100.0" text="Clear" textAlignment="CENTER" textFill="#9a8021">
+                     <font>
+                        <Font size="16.0" />
+                     </font></Button>
+                  <Button fx:id="Exit" alignment="CENTER" contentDisplay="CENTER" layoutX="21.0" layoutY="383.0" mnemonicParsing="false" onAction="#ExitApp" prefHeight="35.0" prefWidth="100.0" text="Exit" textFill="#9a8021">
+                     <font>
+                        <Font size="16.0" />
+                     </font></Button>
                   <ImageView fitHeight="91.0" fitWidth="100.0" layoutX="21.0" layoutY="35.0">
                      <image>
                         <Image url="@../images/Logo.png" />
@@ -105,16 +111,15 @@
                         <Font size="16.0" />
                      </font>
                   </Button>
-                  <Label alignment="CENTER" contentDisplay="CENTER" layoutX="39.0" layoutY="504.0" prefHeight="35.0" prefWidth="270.0" text="Recommended House Price" textAlignment="CENTER" textFill="#1ea31b" textOverrun="CLIP" wrapText="true">
+                  <Label alignment="CENTER" contentDisplay="CENTER" layoutX="39.0" layoutY="504.0" prefHeight="35.0" prefWidth="270.0" text="Monthly Payment" textAlignment="CENTER" textFill="#1ea31b">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </Label>
-                  <Label alignment="CENTER" contentDisplay="CENTER" layoutX="39.0" layoutY="535.0" prefHeight="35.0" prefWidth="270.0" text="View Amortization Schedule" textAlignment="CENTER" textFill="#1ea31b" textOverrun="CLIP" wrapText="true">
+                  <Button fx:id="viewAmortizationScheduleButton" alignment="CENTER" contentDisplay="CENTER" layoutX="309.0" layoutY="444.0" mnemonicParsing="false" onAction="#ViewAmortizationSchedule" prefHeight="35.0" prefWidth="270.0" text="View Amortization Schedule" textAlignment="CENTER" textFill="#ab984a">
                      <font>
                         <Font size="16.0" />
-                     </font>
-                  </Label>
+                     </font></Button>
                   <TextField fx:id="TotalPayment" layoutX="309.0" layoutY="508.0" onAction="#CalculateRecommendedPrice" />
                </children>
             </AnchorPane>

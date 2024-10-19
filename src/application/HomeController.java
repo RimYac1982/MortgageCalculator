@@ -2,12 +2,16 @@ package application;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
-
+import java.io.IOException;
 import java.text.NumberFormat;
 
 public class HomeController {
@@ -48,7 +52,10 @@ public class HomeController {
     private Button Calculate;
 
     @FXML
-    private Label RecommendedHousePrice;  
+    private Label RecommendedHousePrice; 
+    
+    @FXML
+    private Button viewAmortizationScheduleButton;
 
     @FXML
     void CalculateButtonPressed(ActionEvent event) {
@@ -67,8 +74,6 @@ public class HomeController {
     }
 
 
-
-    // Method to clear all input fields
     @FXML
     void ClearForm(ActionEvent event) {
         PurchasePriceField.clear();
@@ -91,9 +96,29 @@ public class HomeController {
         System.out.println("Calculating recommended house price...");
     }
 
-    // New method to view the amortization schedule (implement logic)
+
     @FXML
     void ViewAmortizationSchedule(ActionEvent event) {
-        System.out.println("Viewing amortization schedule...");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("AmortizationSchedule.fxml"));
+            Parent root = loader.load();
+
+            double loanAmount = Double.parseDouble(PurchasePriceField.getText()) - Double.parseDouble(DownPaymentField.getText());
+            double interestRate = Double.parseDouble(InterestRateField.getText());
+            int loanTerm = (int) LoanDurationSelected.getValue(); // get value from the slider
+  
+            AmortizationScheduleController controller = loader.getController();
+
+            controller.populateSchedule(loanAmount, interestRate, loanTerm);
+            
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Amortization Schedule");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+
 }
