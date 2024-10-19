@@ -1,0 +1,16 @@
+# Ignore bin directory
+bin/
+
+# Ignore class files
+*.class
+
+# Ignore log files
+*.log
+
+# Ignore jar files
+*.jar
+
+# Ignore other common files
+*.zip
+*.DS_Store
+
