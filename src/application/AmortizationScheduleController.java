@@ -22,12 +22,6 @@ public class AmortizationScheduleController {
 
     @FXML
     private TableView<Payment> scheduleTable;
-    
-    @FXML
-    private Button Exit;
-    
-    @FXML
-    private Button Back;
 
     @FXML
     private TableColumn<Payment, Integer> paymentNumberColumn;
@@ -44,10 +38,17 @@ public class AmortizationScheduleController {
     @FXML
     private TableColumn<Payment, Double> interestPaidColumn;
 
+    @FXML
+    private Button backButton;
+
+    @FXML
+    private Button Exit;
+
     private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
 
+    @FXML
     public void initialize() {
- 
+        // Set up the table columns
         paymentNumberColumn.setCellValueFactory(new PropertyValueFactory<>("paymentNumber"));
         paymentDateColumn.setCellValueFactory(new PropertyValueFactory<>("paymentDate"));
         paymentAmountColumn.setCellValueFactory(new PropertyValueFactory<>("paymentAmount"));
@@ -73,16 +74,33 @@ public class AmortizationScheduleController {
             paymentDate = paymentDate.plusMonths(1);
         }
 
-        System.out.println("Monthly Payment: " + currencyFormat.format(monthlyPayment));
-
         scheduleTable.setItems(payments);
     }
-
 
     private double calculateMonthlyPayment(double loanAmount, double monthlyInterestRate, int loanTerm) {
         double numerator = monthlyInterestRate * Math.pow(1 + monthlyInterestRate, loanTerm * 12);
         double denominator = Math.pow(1 + monthlyInterestRate, loanTerm * 12) - 1;
         return loanAmount * (numerator / denominator);
+    }
+
+    @FXML
+    public void goBack(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("HomeView.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Mortgage Calculator");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void ExitApp(ActionEvent event) {
+        System.exit(0);
     }
 
     public static class Payment {
@@ -99,35 +117,10 @@ public class AmortizationScheduleController {
             this.principalPaid = principalPaid;
             this.interestPaid = interestPaid;
         }
-        
-        @FXML
-        public void goBack(ActionEvent event) {
-            try {
-                // Load the HomeView.fxml
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("HomeView.fxml"));
-                Parent root = loader.load();
-
-                // Get the current stage from the event
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                
-                // Set the new scene
-                stage.setScene(new Scene(root));
-                stage.setTitle("Mortgage Calculator");
-                stage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        
-        @FXML
-        void ExitApp(ActionEvent event) {
-            System.exit(0);
-        }
 
         public int getPaymentNumber() {
             return paymentNumber;
         }
-        
 
         public LocalDate getPaymentDate() {
             return paymentDate;
