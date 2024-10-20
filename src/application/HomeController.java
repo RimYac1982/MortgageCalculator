@@ -16,7 +16,7 @@ import java.text.NumberFormat;
 
 public class HomeController {
 
-    private NumberFormat Currency = NumberFormat.getCurrencyInstance();
+    private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
 
     @FXML
     private Slider LoanDurationSelected;
@@ -35,10 +35,10 @@ public class HomeController {
 
     @FXML
     private TextField PurchasePriceField;
-    
+
     @FXML
     private TextField InsuranceRateField;
-    
+
     @FXML
     private TextField TotalPayment;
 
@@ -47,32 +47,101 @@ public class HomeController {
 
     @FXML
     private Button Clear;
-    
+
     @FXML
     private Button Calculate;
 
     @FXML
-    private Label RecommendedHousePrice; 
-    
+    private Label RecommendedHousePrice;
+
     @FXML
     private Button viewAmortizationScheduleButton;
 
     @FXML
-    void CalculateButtonPressed(ActionEvent event) {
-                double PurchasePriceAmount = Double.parseDouble(PurchasePriceField.getText());
-                double DownPaymentPriceAmount = Double.parseDouble(DownPaymentField.getText());
-                double InterestRateAmount = Double.parseDouble(InterestRateField.getText());
-                double Loan = LoanDurationSelected.getValue();         
-                double Principle = PurchasePriceAmount - DownPaymentPriceAmount;
-                InterestRateAmount = InterestRateAmount / 100;
-                double InterestRateMonth = InterestRateAmount / 12;
-                double LoanMonth = Loan * 12;
-                double top = (InterestRateMonth * Math.pow(1 + InterestRateMonth, LoanMonth));
-                double bottom = (Math.pow(1 + InterestRateMonth, LoanMonth) - 1);
-                double Total = Principle * (top / bottom);
-                TotalPayment.setText(Currency.format(Total));           
+    public void initialize() {
+    	
+        setNumericInputRestrictions(monthlyIncomeField);
+        setNumericInputRestrictions(monthlyExpensesField);
+        setNumericInputRestrictions(PurchasePriceField);
+        setNumericInputRestrictions(DownPaymentField);
+        setInterestRateInputRestrictions(InterestRateField);
+        setNumericInputRestrictions(InsuranceRateField);
+
+        addCurrencyFormattingListener(monthlyIncomeField);
+        addCurrencyFormattingListener(monthlyExpensesField);
+        addCurrencyFormattingListener(PurchasePriceField);
+        addCurrencyFormattingListener(DownPaymentField);
+        addCurrencyFormattingListener(InsuranceRateField);
     }
 
+    private void setNumericInputRestrictions(TextField textField) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*(\\.\\d*)?")) {
+                textField.setText(oldValue);
+            }
+        });
+    }
+
+    private void setInterestRateInputRestrictions(TextField textField) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*(\\.\\d*)?") || newValue.length() > 5) {
+                textField.setText(oldValue);
+            }
+            try {
+                double interestRate = Double.parseDouble(newValue);
+                if (interestRate < 0 || interestRate > 20) {
+                    textField.setText(oldValue);
+                }
+            } catch (NumberFormatException e) {
+
+            }
+        });
+
+        textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) { 
+                try {
+                    double interestRate = Double.parseDouble(textField.getText());
+                    textField.setText(String.format("%.2f%%", interestRate));
+                } catch (NumberFormatException e) {
+                    textField.setText(""); 
+                }
+            }
+        });
+    }
+
+    private void addCurrencyFormattingListener(TextField textField) {
+        textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) { 
+                try {
+                    double value = Double.parseDouble(textField.getText());
+                    textField.setText(currencyFormat.format(value));
+                } catch (NumberFormatException e) {
+                    textField.setText("");
+                }
+            }
+        });
+    }
+
+    @FXML
+    void CalculateButtonPressed(ActionEvent event) {
+        try {
+            double PurchasePriceAmount = Double.parseDouble(PurchasePriceField.getText().replaceAll("[^\\d.]", ""));
+            double DownPaymentPriceAmount = Double.parseDouble(DownPaymentField.getText().replaceAll("[^\\d.]", ""));
+            double InterestRateAmount = Double.parseDouble(InterestRateField.getText().replaceAll("[^\\d.]", ""));
+            double Loan = LoanDurationSelected.getValue();
+            double Principle = PurchasePriceAmount - DownPaymentPriceAmount;
+            InterestRateAmount = InterestRateAmount / 100;
+            double InterestRateMonth = InterestRateAmount / 12;
+            double LoanMonth = Loan * 12;
+            double top = (InterestRateMonth * Math.pow(1 + InterestRateMonth, LoanMonth));
+            double bottom = (Math.pow(1 + InterestRateMonth, LoanMonth) - 1);
+            double Total = Principle * (top / bottom);
+            TotalPayment.setText(currencyFormat.format(Total));
+        } catch (NumberFormatException e) {
+            // Handle invalid input
+            System.out.println("Please enter valid numeric values in all fields.");
+        }
+    }
 
     @FXML
     void ClearForm(ActionEvent event) {
@@ -82,8 +151,8 @@ public class HomeController {
         monthlyIncomeField.clear();
         monthlyExpensesField.clear();
         InsuranceRateField.clear();
-        TotalPayment.setText("");           
-        LoanDurationSelected.setValue(20);  
+        TotalPayment.setText("");
+        LoanDurationSelected.setValue(20);
     }
 
     @FXML
@@ -96,21 +165,20 @@ public class HomeController {
         System.out.println("Calculating recommended house price...");
     }
 
-
     @FXML
     void ViewAmortizationSchedule(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("AmortizationSchedule.fxml"));
             Parent root = loader.load();
 
-            double loanAmount = Double.parseDouble(PurchasePriceField.getText()) - Double.parseDouble(DownPaymentField.getText());
-            double interestRate = Double.parseDouble(InterestRateField.getText());
-            int loanTerm = (int) LoanDurationSelected.getValue(); // get value from the slider
-  
-            AmortizationScheduleController controller = loader.getController();
+            double loanAmount = Double.parseDouble(PurchasePriceField.getText().replaceAll("[^\\d.]", "")) -
+                    Double.parseDouble(DownPaymentField.getText().replaceAll("[^\\d.]", ""));
+            double interestRate = Double.parseDouble(InterestRateField.getText().replaceAll("[^\\d.]", ""));
+            int loanTerm = (int) LoanDurationSelected.getValue();
 
+            AmortizationScheduleController controller = loader.getController();
             controller.populateSchedule(loanAmount, interestRate, loanTerm);
-            
+
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.setTitle("Amortization Schedule");
@@ -119,6 +187,4 @@ public class HomeController {
             e.printStackTrace();
         }
     }
-
-
 }
