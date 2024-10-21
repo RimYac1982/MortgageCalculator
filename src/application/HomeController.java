@@ -5,7 +5,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -138,8 +140,11 @@ public class HomeController {
             double Total = Principle * (top / bottom);
             TotalPayment.setText(currencyFormat.format(Total));
         } catch (NumberFormatException e) {
-            // Handle invalid input
-            System.out.println("Please enter valid numeric values in all fields.");
+        	Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("All Fields are required for calculations.");
+            alert.showAndWait();
         }
     }
 
@@ -157,8 +162,32 @@ public class HomeController {
 
     @FXML
     void ExitApp(ActionEvent event) {
-        System.exit(0);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Exit Application");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to exit the app?");
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                System.exit(0);
+            }          
+        });
     }
+    
+    @FXML
+    void goToHomeAffordabilityCalculator(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("HomeAffordabilityCalculator.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Home Affordability Calculator");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     @FXML
     void CalculateRecommendedPrice(ActionEvent event) {
@@ -185,6 +214,12 @@ public class HomeController {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+        }catch (NumberFormatException e) {
+        	Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("All Fields are required for calculations.");
+            alert.showAndWait();
         }
     }
 }

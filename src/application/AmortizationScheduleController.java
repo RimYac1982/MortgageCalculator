@@ -8,7 +8,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -99,8 +101,16 @@ public class AmortizationScheduleController {
     }
 
     @FXML
-    public void ExitApp(ActionEvent event) {
-        System.exit(0);
+    void ExitApp(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Exit Application");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to exit the app?");
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                System.exit(0);
+            }          
+        });
     }
 
     public static class Payment {
