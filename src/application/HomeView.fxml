@@ -23,12 +23,12 @@
                <children>
                   <Button fx:id="Clear" alignment="CENTER" contentDisplay="CENTER" layoutX="20.0" layoutY="330.0" mnemonicParsing="false" onAction="#ClearForm" prefHeight="35.0" prefWidth="100.0" text="Clear" textAlignment="CENTER" textFill="#9a8021">
                      <font>
-                        <Font size="11.0" />
+                        <Font size="16.0" />
                      </font>
                   </Button>
                   <Button fx:id="Exit" alignment="CENTER" contentDisplay="CENTER" layoutX="20.0" layoutY="380.0" mnemonicParsing="false" onAction="#ExitApp" prefHeight="35.0" prefWidth="100.0" text="Exit" textFill="#9a8021">
                      <font>
-                        <Font size="11.0" />
+                        <Font size="16.0" />
                      </font>
                   </Button>
                   <ImageView fitHeight="91.0" fitWidth="100.0" layoutX="21.0" layoutY="35.0">
@@ -36,9 +36,9 @@
                         <Image url="@../images/Logo.png" />
                      </image>
                   </ImageView>
-                  <Button fx:id="homeAffordabilityButton" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="440.0" mnemonicParsing="false" onAction="#goToHomeAffordabilityCalculator" prefHeight="35.0" prefWidth="126.0" text="Affordability Calculator" textFill="#9a8021">
+                  <Button fx:id="homeAffordabilityButton" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="440.0" mnemonicParsing="false" onAction="#goToHomeAffordabilityCalculator" prefHeight="52.0" prefWidth="126.0" text="Affordability Calculator" textAlignment="CENTER" textFill="#9a8021" wrapText="true">
                      <font>
-                        <Font size="11.0" />
+                        <Font size="16.0" />
                      </font>
                   </Button>
                </children>
