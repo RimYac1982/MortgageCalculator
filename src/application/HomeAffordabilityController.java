@@ -3,23 +3,30 @@ package application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 
 public class HomeAffordabilityController {
+	
+	private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+	
+	@FXML
+    private Slider LoanDurationSelected;
 
     @FXML
     private TextField annualIncomeField;
 
     @FXML
     private TextField interestRateField;
-    
+
     @FXML
-    private TextField DebtField;
+    private TextField debtField;
 
     @FXML
     private TextField monthlyExpensesField;
@@ -29,35 +36,122 @@ public class HomeAffordabilityController {
 
     @FXML
     private TextField maxAffordablePriceField;
-    
+
     @FXML
     private Button calculateAffordabilityBtn;
-    
+
     @FXML
     private Button Exit;
 
     @FXML
     private Button Clear;
+
+    @FXML
+    private Button GoHome;
     
     @FXML
-    private Button Home;
+    public void initialize() {
+        
+        setIntegerInputRestrictions(annualIncomeField);
+        setInterestRateInputRestrictions(interestRateField);
+        setIntegerInputRestrictions(debtField);
+        setIntegerInputRestrictions(monthlyExpensesField);
+        setIntegerInputRestrictions(downPaymentField);
+        
+        addCurrencyFormattingListener(annualIncomeField);
+        addCurrencyFormattingListener(debtField);
+        addCurrencyFormattingListener(monthlyExpensesField);
+        addCurrencyFormattingListener(downPaymentField);
+    }
 
+    private void setIntegerInputRestrictions(TextField textField) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                textField.setText(oldValue);
+            }
+        });
+    }
+
+    private void setInterestRateInputRestrictions(TextField textField) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*(\\.\\d*)?") || newValue.length() > 5) {
+                textField.setText(oldValue);
+            }
+            try {
+                double interestRate = Double.parseDouble(newValue);
+                if (interestRate < 0 || interestRate > 20) {
+                    textField.setText(oldValue);
+                }
+            } catch (NumberFormatException e) {
+
+            }
+        });
+
+        textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) { 
+                try {
+                    double interestRate = Double.parseDouble(textField.getText());
+                    textField.setText(String.format("%.2f%%", interestRate));
+                } catch (NumberFormatException e) {
+                    textField.setText(""); 
+                }
+            }
+        });
+    }
+    
+    private void addCurrencyFormattingListener(TextField textField) {
+        textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) { 
+                try {
+                    double value = Double.parseDouble(textField.getText());
+                    textField.setText(currencyFormat.format(value));
+                } catch (NumberFormatException e) {
+                    textField.setText("");
+                }
+            }
+        });
+    }
+    
+    @FXML
     public void calculateAffordability() {
-        double annualIncome = Double.parseDouble(annualIncomeField.getText());
-        double monthlyExpenses = Double.parseDouble(monthlyExpensesField.getText());
-        double interestRate = Double.parseDouble(interestRateField.getText());
-        double downPayment = Double.parseDouble(downPaymentField.getText());
+        try {
+            double annualIncome = Double.parseDouble(annualIncomeField.getText().replaceAll("[^\\d.]", ""));
+            double monthlyExpenses = Double.parseDouble(monthlyExpensesField.getText().replaceAll("[^\\d.]", ""));
+            double creditCardDebt = Double.parseDouble(debtField.getText().replaceAll("[^\\d.]", ""));
+            double annualDebt = (monthlyExpenses * 12) + creditCardDebt;
+            double affordableIncome = annualIncome - annualDebt;
+            double maxAffordablePrice = affordableIncome * 5;
 
-        double maxAffordable = (annualIncome - (monthlyExpenses * 12)) * 5;
-        maxAffordablePriceField.setText(String.format("%.2f", maxAffordable));
+            maxAffordablePriceField.setText(String.format("%.2f", maxAffordablePrice));
+
+        } catch (NumberFormatException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Input Error");
+            alert.setHeaderText(null);
+            alert.setContentText("All fields are required and must contain valid numeric values.");
+            alert.showAndWait();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("An unexpected error occurred. Please check the input fields.");
+            alert.showAndWait();
+        }
+    }
+    
+    @FXML
+    void CalculateAffortabilityPrice(ActionEvent event) {
+        System.out.println("Calculating recommended house price...");
     }
 
     @FXML
     void ClearForm(ActionEvent event) {
-    	annualIncomeField.clear();
-        downPaymentField.clear();
-        interestRateField.clear();
-        monthlyExpensesField.clear();
+        if (annualIncomeField != null) annualIncomeField.clear();
+        if (monthlyExpensesField != null) monthlyExpensesField.clear();
+        if (debtField != null) debtField.clear();
+        if (downPaymentField != null) downPaymentField.clear();
+        if (interestRateField != null) interestRateField.clear();
+        if (maxAffordablePriceField != null) maxAffordablePriceField.clear();
     }
 
     @FXML
@@ -69,21 +163,19 @@ public class HomeAffordabilityController {
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 System.exit(0);
-            }          
+            }
         });
     }
 
     @FXML
     void goHome(ActionEvent event) {
         try {
-            // Load the home view FXML file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("HomeView.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) Home.getScene().getWindow();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.setTitle("Home View");
+            stage.setTitle("Mortgage Calculator");
             stage.show();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
