@@ -1,51 +1,91 @@
 package application;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class HomeAffordabilityController {
 
     @FXML
-    private TextField monthlyIncomeField;
+    private TextField annualIncomeField;
+
+    @FXML
+    private TextField interestRateField;
+    
+    @FXML
+    private TextField DebtField;
 
     @FXML
     private TextField monthlyExpensesField;
 
     @FXML
-    private TextField DTIRatioField;
+    private TextField downPaymentField;
 
     @FXML
-    private TextField affordabilityInterestRateField;
+    private TextField maxAffordablePriceField;
+    
+    @FXML
+    private Button calculateAffordabilityBtn;
+    
+    @FXML
+    private Button Exit;
 
     @FXML
-    private Slider affordabilityLoanTermSlider;
+    private Button Clear;
+    
+    @FXML
+    private Button Home;
+
+    public void calculateAffordability() {
+        double annualIncome = Double.parseDouble(annualIncomeField.getText());
+        double monthlyExpenses = Double.parseDouble(monthlyExpensesField.getText());
+        double interestRate = Double.parseDouble(interestRateField.getText());
+        double downPayment = Double.parseDouble(downPaymentField.getText());
+
+        double maxAffordable = (annualIncome - (monthlyExpenses * 12)) * 5;
+        maxAffordablePriceField.setText(String.format("%.2f", maxAffordable));
+    }
 
     @FXML
-    private Label affordableHousePriceLabel;
+    void ClearForm(ActionEvent event) {
+    	annualIncomeField.clear();
+        downPaymentField.clear();
+        interestRateField.clear();
+        monthlyExpensesField.clear();
+    }
 
     @FXML
-    void calculateAffordability() {
+    void ExitApp(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Exit Application");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to exit the app?");
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                System.exit(0);
+            }          
+        });
+    }
+
+    @FXML
+    void goHome(ActionEvent event) {
         try {
-            double monthlyIncome = Double.parseDouble(monthlyIncomeField.getText());
-            double monthlyExpenses = Double.parseDouble(monthlyExpensesField.getText());
-            double dtiRatio = Double.parseDouble(DTIRatioField.getText()) / 100;
-            double interestRate = Double.parseDouble(affordabilityInterestRateField.getText()) / 100;
-            double loanTermYears = affordabilityLoanTermSlider.getValue();
+            // Load the home view FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("HomeView.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) Home.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Home View");
+            stage.show();
 
-            // Simple calculation for affordable house price
-            double affordableMonthlyPayment = (monthlyIncome - monthlyExpenses) * dtiRatio;
-            double monthlyInterestRate = interestRate / 12;
-            double loanTermMonths = loanTermYears * 12;
-            double affordableLoanAmount = affordableMonthlyPayment / (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, loanTermMonths) / (Math.pow(1 + monthlyInterestRate, loanTermMonths) - 1));
-
-            affordableHousePriceLabel.setText(String.format("%.2f", affordableLoanAmount));
-
-        } catch (NumberFormatException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Input Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Please enter valid numeric values.");
-            alert.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

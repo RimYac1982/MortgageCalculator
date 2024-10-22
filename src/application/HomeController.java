@@ -8,7 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -54,10 +53,10 @@ public class HomeController {
     private Button Calculate;
 
     @FXML
-    private Label RecommendedHousePrice;
-
-    @FXML
     private Button viewAmortizationScheduleButton;
+    
+    @FXML
+    private Button homeAffordabilityButton;
 
     @FXML
     public void initialize() {
@@ -176,18 +175,16 @@ public class HomeController {
     @FXML
     void goToHomeAffordabilityCalculator(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("HomeAffordabilityCalculator.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/HomeAffordabilityCalculator.fxml"));
             Parent root = loader.load();
-            Stage stage = new Stage();
+            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Home Affordability Calculator");
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); 
         }
     }
-
-
 
     @FXML
     void CalculateRecommendedPrice(ActionEvent event) {
