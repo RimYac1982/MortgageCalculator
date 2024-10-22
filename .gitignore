@@ -14,3 +14,6 @@ bin/
 *.zip
 *.DS_Store
 
+# Ignore build directories for Maven, Gradle, etc.
+target/
+build/

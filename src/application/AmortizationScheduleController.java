@@ -1,5 +1,4 @@
 package application;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,7 +16,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.text.NumberFormat;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 
 public class AmortizationScheduleController {
@@ -32,13 +31,13 @@ public class AmortizationScheduleController {
     private TableColumn<Payment, LocalDate> paymentDateColumn;
 
     @FXML
-    private TableColumn<Payment, Double> paymentAmountColumn;
+    private TableColumn<Payment, String> paymentAmountColumn;
 
     @FXML
-    private TableColumn<Payment, Double> principalPaidColumn;
+    private TableColumn<Payment, String> principalPaidColumn;
 
     @FXML
-    private TableColumn<Payment, Double> interestPaidColumn;
+    private TableColumn<Payment, String> interestPaidColumn;
 
     @FXML
     private Button backButton;
@@ -46,16 +45,16 @@ public class AmortizationScheduleController {
     @FXML
     private Button Exit;
 
-    private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+    private static final DecimalFormat df = new DecimalFormat("#.00");
 
     @FXML
     public void initialize() {
         // Set up the table columns
         paymentNumberColumn.setCellValueFactory(new PropertyValueFactory<>("paymentNumber"));
         paymentDateColumn.setCellValueFactory(new PropertyValueFactory<>("paymentDate"));
-        paymentAmountColumn.setCellValueFactory(new PropertyValueFactory<>("paymentAmount"));
-        principalPaidColumn.setCellValueFactory(new PropertyValueFactory<>("principalPaid"));
-        interestPaidColumn.setCellValueFactory(new PropertyValueFactory<>("interestPaid"));
+        paymentAmountColumn.setCellValueFactory(new PropertyValueFactory<>("paymentAmountFormatted"));
+        principalPaidColumn.setCellValueFactory(new PropertyValueFactory<>("principalPaidFormatted"));
+        interestPaidColumn.setCellValueFactory(new PropertyValueFactory<>("interestPaidFormatted"));
     }
 
     public void populateSchedule(double loanAmount, double interestRate, int loanTerm) {
@@ -136,16 +135,16 @@ public class AmortizationScheduleController {
             return paymentDate;
         }
 
-        public double getPaymentAmount() {
-            return paymentAmount;
+        public String getPaymentAmountFormatted() {
+            return df.format(paymentAmount);
         }
 
-        public double getPrincipalPaid() {
-            return principalPaid;
+        public String getPrincipalPaidFormatted() {
+            return df.format(principalPaid);
         }
 
-        public double getInterestPaid() {
-            return interestPaid;
+        public String getInterestPaidFormatted() {
+            return df.format(interestPaid);
         }
     }
 }
