@@ -11,18 +11,19 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.text.NumberFormat;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+
 
 public class HomeController {
 
@@ -78,11 +79,15 @@ public class HomeController {
     
     @FXML
     private TextField HomeInsurance;
+    
+    @FXML
+    private TextArea ratesTextArea;
    
 
     @FXML
     public void initialize() {
-    	
+    	fetchAndDisplayMortgageRates(); 
+
         setNumericInputRestrictions(monthlyIncomeField);
         setNumericInputRestrictions(monthlyExpensesField);
         setNumericInputRestrictions(PurchasePriceField);
@@ -96,8 +101,55 @@ public class HomeController {
         addCurrencyFormattingListener(PurchasePriceField);
         addCurrencyFormattingListener(DownPaymentField);
         addCurrencyFormattingListener(InsuranceRateField);
-                
+   
+        ratesTextArea.setStyle("-fx-text-fill: #9a8021; -fx-font-family: 'Courier New'; -fx-font-size: 13px; -fx-font-weight: bold;");
     }
+    
+    public void fetchAndDisplayMortgageRates() {
+        MortgageRateFetcher fetcher = new MortgageRateFetcher();
+        String rawRates = fetcher.fetchMortgageRates();
+
+        if (rawRates != null && !rawRates.startsWith("Error")) {
+            String formattedRates = formatInterestRates(rawRates);
+            ratesTextArea.setText(formattedRates);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText(rawRates);
+            alert.showAndWait();
+        }
+    }
+
+    public String formatInterestRates(String rawJson) {
+        StringBuilder formattedRates = new StringBuilder();
+
+        try {
+            JSONObject jsonObj = new JSONObject(rawJson);
+
+            formattedRates.append(String.format("%-29s %-18s %-10s %-12s\n", "Central Bank", "Country", "Rate(%)", "Last Updated"));
+            
+            JSONArray centralBankRates = jsonObj.getJSONArray("central_bank_rates");
+            for (int i = 0; i < centralBankRates.length(); i++) {
+                JSONObject rate = centralBankRates.getJSONObject(i);
+                String bank = rate.getString("central_bank");
+                String country = rate.getString("country");
+                double ratePct = rate.getDouble("rate_pct");
+                String lastUpdated = rate.getString("last_updated");
+
+                formattedRates.append(String.format("%-29s %-18s %-10.2f %-12s\n", bank, country, ratePct, lastUpdated));
+            }
+
+            formattedRates.append("\n");
+
+        } catch (Exception e) {
+            formattedRates.append("Error parsing rates");
+            e.printStackTrace();
+        }
+
+        return formattedRates.toString();
+    }
+
     
     public void populatePieChart(double monthlyPayment, double propertyTax, double homeInsurance) {
         PieChart.Data principalAndInterestData = new PieChart.Data("Principal & Interest", monthlyPayment);
@@ -106,12 +158,10 @@ public class HomeController {
         paymentBreakdownChart.getData().clear();
         paymentBreakdownChart.getData().addAll(principalAndInterestData, propertyTaxData, homeInsuranceData);
 
-        principalAndInterestData.getNode().setStyle("-fx-pie-color: blue;");
-        propertyTaxData.getNode().setStyle("-fx-pie-color: yellow;");
-        homeInsuranceData.getNode().setStyle("-fx-pie-color: red;");
+        principalAndInterestData.getNode().setStyle("-fx-pie-color: #0000ff;");
+        propertyTaxData.getNode().setStyle("-fx-pie-color: #9a8021;");
+        homeInsuranceData.getNode().setStyle("-fx-pie-color: fc0000;");
     }
-
-
 
     private void setNumericInputRestrictions(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -273,8 +323,7 @@ public class HomeController {
             return 66;  
         }
     }
-
-
+    
     @FXML
     void ClearForm(ActionEvent event) {
         PurchasePriceField.clear();

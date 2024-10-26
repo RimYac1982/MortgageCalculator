@@ -1,1 +1,26 @@
-/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */.label {
+    -fx-font-size: 14px;
+    -fx-text-fill: green;
+}
+
+.button {
+    -fx-background-color: #0073e6;
+    -fx-text-fill: white;
+}
+
+.text-area {
+    -fx-font-family: "Arial";
+    -fx-font-size: 12px;
+    -fx-background-color: #f4f4f4;
+}
+
+.text-field {
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #ccc;
+}
+
+#ratesBox {
+    -fx-border-color: #ccc;
+    -fx-padding: 10;
+    -fx-background-color: #f0f0f0;
+}
