@@ -13,11 +13,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" stylesheets="@../css/application.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.AmortizationScheduleController">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1000.0" stylesheets="@../css/application.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.AmortizationScheduleController">
 	<children>
-		<SplitPane dividerPositions="0.2337092731829574" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0">
+		<SplitPane dividerPositions="0.2337092731829574" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1000.0">
 			<items>
-				<AnchorPane focusTraversable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="150">
+				<AnchorPane focusTraversable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="150.0">
 					<children>
 						<Button fx:id="backButton" alignment="CENTER" contentDisplay="CENTER" layoutX="24.0" layoutY="470.0" mnemonicParsing="false" onAction="#goBack" prefHeight="35.0" prefWidth="100.0" text="Back" textAlignment="CENTER" textFill="#9a8021">
 							<font>
@@ -36,23 +36,23 @@
 						</ImageView>
 					</children>
 				</AnchorPane>
-				<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="650">
+				<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="850.0">
 					<children>
-						<Label alignment="CENTER" contentDisplay="CENTER" layoutX="126.0" layoutY="20.0" prefHeight="45.0" prefWidth="371.0" text="My Current Amortization Schedule" textAlignment="CENTER" textFill="#997f22">
+						<Label alignment="CENTER" contentDisplay="CENTER" layoutX="210.0" layoutY="25.0" prefHeight="45.0" prefWidth="371.0" text="My Current Amortization Schedule" textAlignment="CENTER" textFill="#997f22">
 							<font>
 								<Font size="24.0" />
 							</font>
 						</Label>
-						<TableView fx:id="scheduleTable" layoutX="25.0" layoutY="76.0" prefHeight="422.0" prefWidth="600.0">
+						<TableView fx:id="scheduleTable" layoutX="36.0" layoutY="78.0" prefHeight="500.0" prefWidth="750.0">
 							<columns>
-								<TableColumn fx:id="paymentNumberColumn" prefWidth="120.0" text="Payment Number" />
-								<TableColumn fx:id="paymentDateColumn" prefWidth="120.0" text="Payment Date" />
-								<TableColumn fx:id="paymentAmountColumn" prefWidth="120.0" text="Payment Amount" />
-								<TableColumn fx:id="principalPaidColumn" prefWidth="120.0" text="Principal Paid" />
-								<TableColumn fx:id="interestPaidColumn" prefWidth="120.0" text="Interest Paid" />
+								<TableColumn fx:id="paymentNumberColumn" prefWidth="150.0" text="Payment Number" />
+								<TableColumn fx:id="paymentDateColumn" prefWidth="150.0" text="Payment Date" />
+								<TableColumn fx:id="paymentAmountColumn" prefWidth="150.0" text="Payment Amount" />
+								<TableColumn fx:id="principalPaidColumn" prefWidth="150.0" text="Principal Paid" />
+								<TableColumn fx:id="interestPaidColumn" prefWidth="150.0" text="Interest Paid" />
 							</columns>
 						</TableView>
-						<LineChart fx:id="paymentChart" layoutX="23.0" layoutY="512.0" prefHeight="268.0" prefWidth="600.0">
+						<LineChart fx:id="paymentChart" layoutX="37.0" layoutY="601.0" prefHeight="370.0" prefWidth="750.0">
 							<xAxis>
 								<NumberAxis label="Payment Number" />
 							</xAxis>
