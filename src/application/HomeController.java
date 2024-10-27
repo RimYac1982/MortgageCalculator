@@ -355,14 +355,18 @@ public class HomeController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/HomeAffordabilityCalculator.fxml"));
             Parent root = loader.load();
+       
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
             stage.setTitle("Home Affordability Calculator");
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();           
         }
     }
+
+
 
     @FXML
     void CalculateRecommendedPrice(ActionEvent event) {
@@ -384,17 +388,21 @@ public class HomeController {
             controller.populateSchedule(loanAmount, interestRate, loanTerm);
 
             Stage stage = new Stage();
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+       
+            stage.setScene(scene);
             stage.setTitle("Amortization Schedule");
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-        }catch (NumberFormatException e) {
-        	Alert alert = new Alert(Alert.AlertType.ERROR);
+        } catch (NumberFormatException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.setContentText("All Fields are required for calculations.");
             alert.showAndWait();
         }
     }
+
+
 }

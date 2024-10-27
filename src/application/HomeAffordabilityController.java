@@ -1,11 +1,15 @@
 package application;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
@@ -48,6 +52,13 @@ public class HomeAffordabilityController {
 
     @FXML
     private Button GoHome;
+    
+    @FXML
+    private TextField dtiRatioField;
+    
+    @FXML
+    private BarChart<String, Number> affordabilityChart;
+
     
     @FXML
     public void initialize() {
@@ -115,14 +126,51 @@ public class HomeAffordabilityController {
     @FXML
     public void calculateAffordability() {
         try {
+            
             double annualIncome = Double.parseDouble(annualIncomeField.getText().replaceAll("[^\\d.]", ""));
             double monthlyExpenses = Double.parseDouble(monthlyExpensesField.getText().replaceAll("[^\\d.]", ""));
             double creditCardDebt = Double.parseDouble(debtField.getText().replaceAll("[^\\d.]", ""));
             double annualDebt = (monthlyExpenses * 12) + creditCardDebt;
+
+            double dtiRatio = (annualDebt / annualIncome) * 100;
+
             double affordableIncome = annualIncome - annualDebt;
             double maxAffordablePrice = affordableIncome * 5;
 
-            maxAffordablePriceField.setText(String.format("%.2f", maxAffordablePrice));
+            maxAffordablePriceField.setText(String.format("$%.2f", maxAffordablePrice));
+            dtiRatioField.setText(String.format("%.2f%%", dtiRatio));
+
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            series.setName("Affordability Breakdown");
+            series.getData().add(new XYChart.Data<>("Income", annualIncome));
+            series.getData().add(new XYChart.Data<>("Expenses", monthlyExpenses * 12));
+            series.getData().add(new XYChart.Data<>("Credit Card Debt", creditCardDebt));
+            series.getData().add(new XYChart.Data<>("Max Affordable Price", maxAffordablePrice));
+
+            affordabilityChart.setCategoryGap(20);  
+            affordabilityChart.setBarGap(5);        
+            affordabilityChart.getData().clear();   
+            affordabilityChart.getData().add(series); 
+
+            for (XYChart.Data<String, Number> data : series.getData()) {
+                if (data.getXValue().equals("Income")) {
+                    data.getNode().setStyle("-fx-bar-fill: green;");
+                } else if (data.getXValue().equals("Expenses")) {
+                    data.getNode().setStyle("-fx-bar-fill: red;");
+                } else if (data.getXValue().equals("Credit Card Debt")) {
+                    data.getNode().setStyle("-fx-bar-fill: orange;");
+                } else if (data.getXValue().equals("Max Affordable Price")) {
+                    data.getNode().setStyle("-fx-bar-fill: blue;");
+                }
+            }
+
+            NumberAxis yAxis = (NumberAxis) affordabilityChart.getYAxis();
+            yAxis.setAutoRanging(false);  
+            yAxis.setLowerBound(0);      
+            yAxis.setUpperBound(500000);  
+            yAxis.setTickUnit(50000);  
+            
+            Platform.runLater(() -> affordabilityChart.layout());
 
         } catch (NumberFormatException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -138,6 +186,7 @@ public class HomeAffordabilityController {
             alert.showAndWait();
         }
     }
+
     
     @FXML
     void CalculateAffortabilityPrice(ActionEvent event) {

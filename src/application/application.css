@@ -1,4 +1,4 @@
-/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */.label {
+ /* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */.label {
     -fx-font-size: 14px;
     -fx-text-fill: green;
 }
@@ -23,4 +23,26 @@
     -fx-border-color: #ccc;
     -fx-padding: 10;
     -fx-background-color: #f0f0f0;
+}
+
+.chart-series-line {
+    -fx-stroke-width: 1px; 
+}
+
+.principal-series .chart-series-line {
+    -fx-stroke: blue; 
+    -fx-stroke-width: 1px; 
+}
+
+.interest-series .chart-series-line {
+    -fx-stroke: orange; 
+    -fx-stroke-width: 1px; 
+}
+
+.chart-legend-item-symbol {
+    -fx-background-color: blue, white; 
+}
+
+.chart-legend-item-symbol:last-of-type {
+    -fx-background-color: orange, white; 
 }
