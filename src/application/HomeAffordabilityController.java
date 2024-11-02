@@ -201,6 +201,7 @@ public class HomeAffordabilityController {
         if (downPaymentField != null) downPaymentField.clear();
         if (interestRateField != null) interestRateField.clear();
         if (maxAffordablePriceField != null) maxAffordablePriceField.clear();
+        if (dtiRatioField != null) dtiRatioField.clear();
     }
 
     @FXML

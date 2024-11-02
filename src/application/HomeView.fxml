@@ -65,7 +65,7 @@
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="45.0" prefWidth="263.0" text="Insurance" textAlignment="CENTER" textFill="#1ea31b" textOverrun="CLIP" wrapText="true" GridPane.rowIndex="5">
+                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="45.0" prefWidth="263.0" text="Health Insurance" textAlignment="CENTER" textFill="#1ea31b" textOverrun="CLIP" wrapText="true" GridPane.rowIndex="5">
                            <font>
                               <Font size="16.0" />
                            </font>
