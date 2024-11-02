@@ -22,6 +22,12 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 
+/**
+ * Controller class for managing the amortization schedule view.
+ * This class is responsible for generating the loan amortization schedule
+ * and displaying it in a table and chart format. It also provides
+ * functionalities to navigate between views and exit the application.
+ */
 public class AmortizationScheduleController {
 
     @FXML
@@ -49,10 +55,14 @@ public class AmortizationScheduleController {
     private Button Exit;
 
     @FXML
-    private LineChart<Number, Number> paymentChart; // LineChart for payments
+    private LineChart<Number, Number> paymentChart;
 
     private static final DecimalFormat df = new DecimalFormat("#.00");
 
+    /**
+     * Initializes the controller class. This method is called after the FXML file
+     * has been loaded. It sets up the table columns with the correct data properties.
+     */
     @FXML
     public void initialize() {
         paymentNumberColumn.setCellValueFactory(new PropertyValueFactory<>("paymentNumber"));
@@ -62,6 +72,13 @@ public class AmortizationScheduleController {
         interestPaidColumn.setCellValueFactory(new PropertyValueFactory<>("interestPaidFormatted"));
     }
 
+    /**
+     * Populates the amortization schedule table and payment chart based on the loan parameters.
+     *
+     * @param loanAmount  the initial loan amount
+     * @param interestRate the annual interest rate (in percentage)
+     * @param loanTerm    the loan term in years
+     */
     public void populateSchedule(double loanAmount, double interestRate, int loanTerm) {
         ObservableList<Payment> payments = FXCollections.observableArrayList();
         double monthlyInterestRate = (interestRate / 100) / 12;
@@ -89,24 +106,32 @@ public class AmortizationScheduleController {
         }
 
         scheduleTable.setItems(payments);
-
-     // After adding the series to the chart
         paymentChart.getData().add(principalSeries);
         paymentChart.getData().add(interestSeries);
 
-        // Apply CSS classes to series nodes
         principalSeries.getNode().getStyleClass().add("principal-series");
         interestSeries.getNode().getStyleClass().add("interest-series");
-
     }
 
-
+    /**
+     * Calculates the monthly payment for the loan based on the loan parameters.
+     *
+     * @param loanAmount         the initial loan amount
+     * @param monthlyInterestRate the monthly interest rate
+     * @param loanTerm           the loan term in years
+     * @return the calculated monthly payment
+     */
     private double calculateMonthlyPayment(double loanAmount, double monthlyInterestRate, int loanTerm) {
         double numerator = monthlyInterestRate * Math.pow(1 + monthlyInterestRate, loanTerm * 12);
         double denominator = Math.pow(1 + monthlyInterestRate, loanTerm * 12) - 1;
         return loanAmount * (numerator / denominator);
     }
 
+    /**
+     * Handles the "Go Back" button action, navigating to the home view.
+     *
+     * @param event the action event triggered by pressing the button
+     */
     @FXML
     public void goBack(ActionEvent event) {
         try {
@@ -122,6 +147,12 @@ public class AmortizationScheduleController {
         }
     }
 
+    /**
+     * Handles the "Exit" button action, prompting the user to confirm
+     * before exiting the application.
+     *
+     * @param event the action event triggered by pressing the button
+     */
     @FXML
     void ExitApp(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -135,6 +166,29 @@ public class AmortizationScheduleController {
         });
     }
 
+    /**
+     * Opens the Loan Comparison view for comparing different loan options.
+     *
+     * @param event the action event triggered by pressing the button
+     */
+    @FXML
+    public void openLoanComparison(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("LoanComparisonView.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Loan Comparison Tool");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Inner class representing a single loan payment in the amortization schedule.
+     * It contains details about the payment amount, principal paid, and interest paid.
+     */
     public static class Payment {
         private final int paymentNumber;
         private final LocalDate paymentDate;
@@ -142,6 +196,15 @@ public class AmortizationScheduleController {
         private final double principalPaid;
         private final double interestPaid;
 
+        /**
+         * Constructs a Payment instance with details of a single loan payment.
+         *
+         * @param paymentNumber the payment number in the schedule
+         * @param paymentDate   the date of the payment
+         * @param paymentAmount the total amount of the payment
+         * @param principalPaid the principal portion of the payment
+         * @param interestPaid  the interest portion of the payment
+         */
         public Payment(int paymentNumber, LocalDate paymentDate, double paymentAmount, double principalPaid, double interestPaid) {
             this.paymentNumber = paymentNumber;
             this.paymentDate = paymentDate;

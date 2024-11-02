@@ -16,11 +16,16 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.text.NumberFormat;
 
+/**
+ * Controller class for managing the home affordability calculator view.
+ * This class calculates an affordable home price based on income, expenses, and debt.
+ * It provides methods to validate inputs, calculate affordability, and manage the UI components.
+ */
 public class HomeAffordabilityController {
-	
-	private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
-	
-	@FXML
+
+    private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+
+    @FXML
     private Slider LoanDurationSelected;
 
     @FXML
@@ -52,29 +57,35 @@ public class HomeAffordabilityController {
 
     @FXML
     private Button GoHome;
-    
+
     @FXML
     private TextField dtiRatioField;
-    
+
     @FXML
     private BarChart<String, Number> affordabilityChart;
 
-    
+    /**
+     * Initializes the controller. Sets up input restrictions and formatting for text fields.
+     */
     @FXML
     public void initialize() {
-        
         setIntegerInputRestrictions(annualIncomeField);
         setInterestRateInputRestrictions(interestRateField);
         setIntegerInputRestrictions(debtField);
         setIntegerInputRestrictions(monthlyExpensesField);
         setIntegerInputRestrictions(downPaymentField);
-        
+
         addCurrencyFormattingListener(annualIncomeField);
         addCurrencyFormattingListener(debtField);
         addCurrencyFormattingListener(monthlyExpensesField);
         addCurrencyFormattingListener(downPaymentField);
     }
 
+    /**
+     * Restricts input in a text field to integers only.
+     *
+     * @param textField the text field to apply the restriction to
+     */
     private void setIntegerInputRestrictions(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
@@ -83,6 +94,12 @@ public class HomeAffordabilityController {
         });
     }
 
+    /**
+     * Restricts input in the interest rate text field to a valid percentage format.
+     * Limits input to two decimal places and a maximum value of 20%.
+     *
+     * @param textField the text field to apply the restriction to
+     */
     private void setInterestRateInputRestrictions(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*(\\.\\d*)?") || newValue.length() > 5) {
@@ -94,7 +111,7 @@ public class HomeAffordabilityController {
                     textField.setText(oldValue);
                 }
             } catch (NumberFormatException e) {
-
+                // Ignore invalid format temporarily
             }
         });
 
@@ -109,7 +126,12 @@ public class HomeAffordabilityController {
             }
         });
     }
-    
+
+    /**
+     * Adds currency formatting to a text field when focus is lost.
+     *
+     * @param textField the text field to apply formatting to
+     */
     private void addCurrencyFormattingListener(TextField textField) {
         textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) { 
@@ -122,18 +144,20 @@ public class HomeAffordabilityController {
             }
         });
     }
-    
+
+    /**
+     * Calculates the maximum affordable home price based on income, expenses, and debt.
+     * Updates the UI with the calculated values and displays them in a bar chart.
+     */
     @FXML
     public void calculateAffordability() {
         try {
-            
             double annualIncome = Double.parseDouble(annualIncomeField.getText().replaceAll("[^\\d.]", ""));
             double monthlyExpenses = Double.parseDouble(monthlyExpensesField.getText().replaceAll("[^\\d.]", ""));
             double creditCardDebt = Double.parseDouble(debtField.getText().replaceAll("[^\\d.]", ""));
             double annualDebt = (monthlyExpenses * 12) + creditCardDebt;
 
             double dtiRatio = (annualDebt / annualIncome) * 100;
-
             double affordableIncome = annualIncome - annualDebt;
             double maxAffordablePrice = affordableIncome * 5;
 
@@ -150,7 +174,7 @@ public class HomeAffordabilityController {
             affordabilityChart.setCategoryGap(20);  
             affordabilityChart.setBarGap(5);        
             affordabilityChart.getData().clear();   
-            affordabilityChart.getData().add(series); 
+            affordabilityChart.getData().add(series);
 
             for (XYChart.Data<String, Number> data : series.getData()) {
                 if (data.getXValue().equals("Income")) {
@@ -165,11 +189,11 @@ public class HomeAffordabilityController {
             }
 
             NumberAxis yAxis = (NumberAxis) affordabilityChart.getYAxis();
-            yAxis.setAutoRanging(false);  
-            yAxis.setLowerBound(0);      
-            yAxis.setUpperBound(500000);  
-            yAxis.setTickUnit(50000);  
-            
+            yAxis.setAutoRanging(false);
+            yAxis.setLowerBound(0);
+            yAxis.setUpperBound(500000);
+            yAxis.setTickUnit(50000);
+
             Platform.runLater(() -> affordabilityChart.layout());
 
         } catch (NumberFormatException e) {
@@ -187,12 +211,21 @@ public class HomeAffordabilityController {
         }
     }
 
-    
+    /**
+     * Placeholder method for calculating affordability, currently only prints a message.
+     *
+     * @param event the action event triggered by button click
+     */
     @FXML
     void CalculateAffortabilityPrice(ActionEvent event) {
         System.out.println("Calculating recommended house price...");
     }
 
+    /**
+     * Clears all input and output fields in the form.
+     *
+     * @param event the action event triggered by button click
+     */
     @FXML
     void ClearForm(ActionEvent event) {
         if (annualIncomeField != null) annualIncomeField.clear();
@@ -204,6 +237,11 @@ public class HomeAffordabilityController {
         if (dtiRatioField != null) dtiRatioField.clear();
     }
 
+    /**
+     * Prompts the user to confirm exit before closing the application.
+     *
+     * @param event the action event triggered by button click
+     */
     @FXML
     void ExitApp(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -217,6 +255,11 @@ public class HomeAffordabilityController {
         });
     }
 
+    /**
+     * Navigates back to the home view.
+     *
+     * @param event the action event triggered by button click
+     */
     @FXML
     void goHome(ActionEvent event) {
         try {
