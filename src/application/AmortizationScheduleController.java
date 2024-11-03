@@ -10,9 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -29,6 +27,8 @@ import java.time.LocalDate;
  * functionalities to navigate between views and exit the application.
  */
 public class AmortizationScheduleController {
+	
+	private ToolbarController toolbarController = new ToolbarController();
 
     @FXML
     private TableView<Payment> scheduleTable;
@@ -128,42 +128,23 @@ public class AmortizationScheduleController {
     }
 
     /**
-     * Handles the "Go Back" button action, navigating to the home view.
+     * Navigates back to the home view by delegating to ToolbarController's goHome method.
      *
-     * @param event the action event triggered by pressing the button
+     * @param event the ActionEvent triggered by clicking the Back button
      */
     @FXML
-    public void goBack(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("HomeView.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Mortgage Calculator");
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    void goBack(ActionEvent event) {
+        toolbarController.goHome(event);
     }
 
     /**
-     * Handles the "Exit" button action, prompting the user to confirm
-     * before exiting the application.
+     * Exits the app by delegating to ToolbarController's ExitApp method.
      *
-     * @param event the action event triggered by pressing the button
+     * @param event the ActionEvent triggered by clicking the Exit button
      */
     @FXML
     void ExitApp(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Exit Application");
-        alert.setHeaderText(null);
-        alert.setContentText("Are you sure you want to exit the app?");
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                System.exit(0);
-            }
-        });
+        toolbarController.ExitApp(event);
     }
 
     /**

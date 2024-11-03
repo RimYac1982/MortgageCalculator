@@ -9,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -19,16 +18,18 @@ import java.text.NumberFormat;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.net.URL;
-import java.net.HttpURLConnection;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 /**
  * Controller class for managing the home view of the mortgage calculator application.
  * Provides functionalities for calculating mortgage payments, fetching mortgage rates, and displaying results.
  */
 public class HomeController {
+	
+	private AmortizationScheduleLoader amortizationScheduleLoader = new AmortizationScheduleLoader();
+	
+	private ToolbarController toolbarController = new ToolbarController();
+	
+	private PropertyTaxAndInsuranceFetcher fetcher = new PropertyTaxAndInsuranceFetcher();
 
     private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
 
@@ -85,6 +86,15 @@ public class HomeController {
 
     @FXML
     private TextArea ratesTextArea;
+    
+    
+    // Add this method to populate fields with saved data
+    public void setFieldValues(double purchasePrice, double downPayment, double interestRate, int loanTerm) {
+        PurchasePriceField.setText(String.valueOf(purchasePrice));
+        DownPaymentField.setText(String.valueOf(downPayment));
+        InterestRateField.setText(String.valueOf(interestRate));
+        LoanDurationSelected.setValue(loanTerm);
+    }
 
     /**
      * Initializes the controller by setting input restrictions and fetching mortgage rates.
@@ -292,8 +302,9 @@ public class HomeController {
 
             String zipCode = zipCodeField.getText();
 
-            double propertyTax = fetchPropertyTax(zipCode);
-            double homeInsurance = fetchHomeInsurance(zipCode);
+         
+            double propertyTax = fetcher.fetchPropertyTax(zipCode);
+            double homeInsurance = fetcher.fetchHomeInsurance(zipCode);
 
             populatePieChart(monthlyPayment, propertyTax, homeInsurance);
 
@@ -307,74 +318,6 @@ public class HomeController {
             alert.setHeaderText(null);
             alert.setContentText("All Fields are required for calculations.");
             alert.showAndWait();
-        }
-    }
-
-    /**
-     * Fetches the property tax based on ZIP code.
-     *
-     * @param zipCode the ZIP code for tax calculation
-     * @return the property tax value
-     */
-    public double fetchPropertyTax(String zipCode) {
-        String apiUrl = "https://real-api-url.com/property-tax?zip=" + zipCode;
-
-        try {
-            URL url = new URL(apiUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Content-Type", "application/json");
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
-            }
-
-            in.close();
-            conn.disconnect();
-
-            JSONObject jsonResponse = new JSONObject(content.toString());
-            return jsonResponse.getDouble("property_tax_rate");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 280;
-        }
-    }
-
-    /**
-     * Fetches the home insurance rate based on ZIP code.
-     *
-     * @param zipCode the ZIP code for insurance calculation
-     * @return the home insurance rate
-     */
-    public double fetchHomeInsurance(String zipCode) {
-        String apiUrl = "https://real-api-url.com/home-insurance?zip=" + zipCode;
-
-        try {
-            URL url = new URL(apiUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Content-Type", "application/json");
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
-            }
-
-            in.close();
-            conn.disconnect();
-
-            JSONObject jsonResponse = new JSONObject(content.toString());
-            return jsonResponse.getDouble("home_insurance_rate");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 66;
         }
     }
 
@@ -393,24 +336,19 @@ public class HomeController {
         InsuranceRateField.clear();
         TotalPayment.setText("");
         LoanDurationSelected.setValue(20);
+        Tax.setText("");
+        HomeInsurance.setText("");
+        zipCodeField.setText("");
     }
 
     /**
-     * Confirms exit before closing the application.
+     * Exits the app by delegating to ToolbarController's ExitApp method.
      *
      * @param event the ActionEvent triggered by clicking the Exit button
      */
     @FXML
     void ExitApp(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Exit Application");
-        alert.setHeaderText(null);
-        alert.setContentText("Are you sure you want to exit the app?");
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                System.exit(0);
-            }
-        });
+        toolbarController.ExitApp(event);
     }
 
     /**
@@ -445,32 +383,19 @@ public class HomeController {
     }
 
     /**
-     * Opens the Amortization Schedule view with populated loan data.
+     * Opens the Amortization Schedule view by calling AmortizationScheduleLoader.
      *
      * @param event the ActionEvent triggered by clicking the View Amortization Schedule button
      */
     @FXML
     void ViewAmortizationSchedule(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("AmortizationSchedule.fxml"));
-            Parent root = loader.load();
-
             double loanAmount = Double.parseDouble(PurchasePriceField.getText().replaceAll("[^\\d.]", "")) -
                     Double.parseDouble(DownPaymentField.getText().replaceAll("[^\\d.]", ""));
             double interestRate = Double.parseDouble(InterestRateField.getText().replaceAll("[^\\d.]", ""));
             int loanTerm = (int) LoanDurationSelected.getValue();
 
-            AmortizationScheduleController controller = loader.getController();
-            controller.populateSchedule(loanAmount, interestRate, loanTerm);
-
-            Stage stage = new Stage();
-            Scene scene = new Scene(root);
-
-            stage.setScene(scene);
-            stage.setTitle("Amortization Schedule");
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+            amortizationScheduleLoader.openAmortizationSchedule(loanAmount, interestRate, loanTerm);
         } catch (NumberFormatException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");

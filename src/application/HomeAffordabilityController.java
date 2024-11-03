@@ -22,6 +22,9 @@ import java.text.NumberFormat;
  * It provides methods to validate inputs, calculate affordability, and manage the UI components.
  */
 public class HomeAffordabilityController {
+	
+	private ToolbarController toolbarController = new ToolbarController();
+
 
     private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
 
@@ -238,21 +241,13 @@ public class HomeAffordabilityController {
     }
 
     /**
-     * Prompts the user to confirm exit before closing the application.
+     * Exits the app by delegating to ToolbarController's ExitApp method.
      *
-     * @param event the action event triggered by button click
+     * @param event the ActionEvent triggered by clicking the Exit button
      */
     @FXML
     void ExitApp(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Exit Application");
-        alert.setHeaderText(null);
-        alert.setContentText("Are you sure you want to exit the app?");
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                System.exit(0);
-            }
-        });
+        toolbarController.ExitApp(event);
     }
 
     /**
@@ -262,15 +257,6 @@ public class HomeAffordabilityController {
      */
     @FXML
     void goHome(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("HomeView.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Mortgage Calculator");
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    	toolbarController.goHome(event);
     }
 }
