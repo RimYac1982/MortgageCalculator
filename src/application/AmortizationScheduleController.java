@@ -4,19 +4,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 
@@ -27,8 +21,8 @@ import java.time.LocalDate;
  * functionalities to navigate between views and exit the application.
  */
 public class AmortizationScheduleController {
-	
-	private ToolbarController toolbarController = new ToolbarController();
+
+    private ToolbarController toolbarController = new ToolbarController();
 
     @FXML
     private TableView<Payment> scheduleTable;
@@ -145,25 +139,6 @@ public class AmortizationScheduleController {
     @FXML
     void ExitApp(ActionEvent event) {
         toolbarController.ExitApp(event);
-    }
-
-    /**
-     * Opens the Loan Comparison view for comparing different loan options.
-     *
-     * @param event the action event triggered by pressing the button
-     */
-    @FXML
-    public void openLoanComparison(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("LoanComparisonView.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Loan Comparison Tool");
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**

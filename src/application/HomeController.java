@@ -328,18 +328,20 @@ public class HomeController {
      */
     @FXML
     void ClearForm(ActionEvent event) {
-        PurchasePriceField.clear();
-        DownPaymentField.clear();
-        InterestRateField.clear();
-        monthlyIncomeField.clear();
-        monthlyExpensesField.clear();
-        InsuranceRateField.clear();
-        TotalPayment.setText("");
-        LoanDurationSelected.setValue(20);
-        Tax.setText("");
-        HomeInsurance.setText("");
-        zipCodeField.setText("");
+        if (PurchasePriceField != null) PurchasePriceField.clear();
+        if (DownPaymentField != null) DownPaymentField.clear();
+        if (InterestRateField != null) InterestRateField.clear();
+        if (monthlyIncomeField != null) monthlyIncomeField.clear();
+        if (monthlyExpensesField != null) monthlyExpensesField.clear();
+        if (InsuranceRateField != null) InsuranceRateField.clear();
+        if (TotalPayment != null) TotalPayment.setText("");
+        if (LoanDurationSelected != null) LoanDurationSelected.setValue(20);  
+        if (Tax != null) Tax.setText("");
+        if (HomeInsurance != null) HomeInsurance.setText("");
+        if (zipCodeField != null) zipCodeField.setText("");
+        if (paymentBreakdownChart != null) paymentBreakdownChart.getData().clear();
     }
+
 
     /**
      * Exits the app by delegating to ToolbarController's ExitApp method.
