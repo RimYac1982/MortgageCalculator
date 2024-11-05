@@ -60,6 +60,7 @@
 								<NumberAxis label="Amount" />
 							</yAxis>
 						</LineChart>
+                  <Button fx:id="downloadButton" layoutX="705.0" layoutY="37.0" mnemonicParsing="false" onAction="#downloadAsPDF" text="Download" textFill="#997f22" />
 
 					</children>
 				</AnchorPane>

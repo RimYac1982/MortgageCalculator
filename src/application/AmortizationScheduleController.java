@@ -11,8 +11,17 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+
 
 /**
  * Controller class for managing the amortization schedule view.
@@ -47,6 +56,9 @@ public class AmortizationScheduleController {
 
     @FXML
     private Button Exit;
+
+    @FXML
+    private Button downloadButton; 
 
     @FXML
     private LineChart<Number, Number> paymentChart;
@@ -140,6 +152,59 @@ public class AmortizationScheduleController {
     void ExitApp(ActionEvent event) {
         toolbarController.ExitApp(event);
     }
+
+    /**
+     * Method to download the amortization schedule as a PDF file.
+     */
+    @FXML
+    public void downloadAsPDF(ActionEvent event) {
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage();
+            document.addPage(page);
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                contentStream.beginText();
+                contentStream.setFont(PDType1Font.HELVETICA, 12);
+                contentStream.setLeading(15f);
+                contentStream.newLineAtOffset(50, 750);
+
+                contentStream.showText("Amortization Schedule");
+                contentStream.newLine();
+                contentStream.showText("--------------------------------------------------");
+                contentStream.newLine();
+
+                contentStream.showText(String.format("%-10s %-20s %-20s %-20s %-20s", 
+                    "No.", "Date", "Amount", "Principal", "Interest"));
+                contentStream.newLine();
+
+                for (Payment payment : scheduleTable.getItems()) {
+                    String line = String.format("%-18s %-18s %-18s %-18s %-18s",
+                            payment.getPaymentNumber(),
+                            payment.getPaymentDate(),
+                            payment.getPaymentAmountFormatted(),
+                            payment.getPrincipalPaidFormatted(),
+                            payment.getInterestPaidFormatted());
+                    contentStream.showText(line);
+                    contentStream.newLine();
+                }
+
+                contentStream.endText();
+            }
+
+            String filePath = "Saved-PDF-Files/AmortizationSchedule.pdf";
+            File file = new File(filePath);
+            file.getParentFile().mkdirs(); 
+            document.save(file);
+
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().open(file);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * Inner class representing a single loan payment in the amortization schedule.
