@@ -17,10 +17,14 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
+
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
+
+import java.io.FileOutputStream;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 /**
@@ -153,57 +157,71 @@ public class AmortizationScheduleController {
         toolbarController.ExitApp(event);
     }
 
-    /**
-     * Method to download the amortization schedule as a PDF file.
-     */
     @FXML
     public void downloadAsPDF(ActionEvent event) {
-        try (PDDocument document = new PDDocument()) {
-            PDPage page = new PDPage();
-            document.addPage(page);
+        // Generate a unique file name using a timestamp
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String timestamp = LocalDateTime.now().format(formatter);
+        String filePath = "Saved-PDF-Files/AmortizationSchedule_" + timestamp + ".pdf";
 
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-                contentStream.beginText();
-                contentStream.setFont(PDType1Font.HELVETICA, 12);
-                contentStream.setLeading(15f);
-                contentStream.newLineAtOffset(50, 750);
+        try {
+            createPdf(filePath);
 
-                contentStream.showText("Amortization Schedule");
-                contentStream.newLine();
-                contentStream.showText("--------------------------------------------------");
-                contentStream.newLine();
-
-                contentStream.showText(String.format("%-10s %-20s %-20s %-20s %-20s", 
-                    "No.", "Date", "Amount", "Principal", "Interest"));
-                contentStream.newLine();
-
-                for (Payment payment : scheduleTable.getItems()) {
-                    String line = String.format("%-18s %-18s %-18s %-18s %-18s",
-                            payment.getPaymentNumber(),
-                            payment.getPaymentDate(),
-                            payment.getPaymentAmountFormatted(),
-                            payment.getPrincipalPaidFormatted(),
-                            payment.getInterestPaidFormatted());
-                    contentStream.showText(line);
-                    contentStream.newLine();
-                }
-
-                contentStream.endText();
-            }
-
-            String filePath = "Saved-PDF-Files/AmortizationSchedule.pdf";
-            File file = new File(filePath);
-            file.getParentFile().mkdirs(); 
-            document.save(file);
-
+            // Open the PDF if the desktop supports it
             if (Desktop.isDesktopSupported()) {
+                File file = new File(filePath);
                 Desktop.getDesktop().open(file);
             }
 
-        } catch (IOException e) {
+        } catch (DocumentException | IOException e) {
             e.printStackTrace();
         }
     }
+
+    public void createPdf(String dest) throws IOException, DocumentException {
+        // Initialize the iText document
+        Document document = new Document();
+        PdfWriter.getInstance(document, new FileOutputStream(dest));
+        document.open();
+
+        // Set up font styles
+        Font headerFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+        Font cellFont = new Font(Font.FontFamily.HELVETICA, 10);
+
+        // Title
+        Paragraph title = new Paragraph("Amortization Schedule", headerFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
+        document.add(new Paragraph(" "));  // Add spacing
+
+        // Create a table with 5 columns for the schedule
+        PdfPTable table = new PdfPTable(5);
+        table.setWidthPercentage(100);  // Full width of the page
+        table.setWidths(new int[]{1, 3, 3, 3, 3}); // Column widths
+
+        // Add header cells to the table
+        String[] headers = {"No.", "Date", "Amount", "Principal", "Interest"};
+        for (String header : headers) {
+            PdfPCell headerCell = new PdfPCell(new Phrase(header, headerFont));
+            headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            headerCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            headerCell.setPadding(5);
+            table.addCell(headerCell);
+        }
+
+        // Add each payment row to the table
+        for (Payment payment : scheduleTable.getItems()) {
+            table.addCell(new PdfPCell(new Phrase(String.valueOf(payment.getPaymentNumber()), cellFont)));
+            table.addCell(new PdfPCell(new Phrase(payment.getPaymentDate().toString(), cellFont)));
+            table.addCell(new PdfPCell(new Phrase(payment.getPaymentAmountFormatted(), cellFont)));
+            table.addCell(new PdfPCell(new Phrase(payment.getPrincipalPaidFormatted(), cellFont)));
+            table.addCell(new PdfPCell(new Phrase(payment.getInterestPaidFormatted(), cellFont)));
+        }
+
+        document.add(table); // Add the populated table to the document
+        document.close();    // Close the document to save changes
+    }
+
 
 
     /**
