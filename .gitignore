@@ -1,19 +1,15 @@
-# Ignore bin directory
-bin/
-
-# Ignore class files
-*.class
-
-# Ignore log files
-*.log
-
-# Ignore jar files
-*.jar
-
-# Ignore other common files
-*.zip
-*.DS_Store
-
-# Ignore build directories for Maven, Gradle, etc.
+# Ignore target and build output
 target/
 build/
+
+# Ignore IDE-specific files
+.classpath
+.project
+.settings/
+
+# Ignore saved files from the application
+Saved-PDF-Files/
+
+# Ignore OS-specific files
+.DS_Store
+

@@ -21,8 +21,8 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("HomeView.fxml"));
-        primaryStage.setTitle("Mortgage Calculator");
+        Parent root = FXMLLoader.load(getClass().getResource("/application/fxml/HomeView.fxml"));
+        primaryStage.setTitle("Mortgage Match");
         primaryStage.setScene(new Scene(root, 1000, 1000));
         primaryStage.show();
     }
