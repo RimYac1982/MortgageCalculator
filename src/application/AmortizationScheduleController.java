@@ -167,22 +167,30 @@ public class AmortizationScheduleController {
 	 */
 	@FXML
 	public void downloadAsPDF(ActionEvent event) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-		String timestamp = LocalDateTime.now().format(formatter);
-		String filePath = "Saved-PDF-Files/AmortizationSchedule_" + timestamp + ".pdf";
+	    // Create the Saved-PDF-Files directory in the user's home directory
+	    File pdfDir = new File(System.getProperty("user.home") + "/Saved-PDF-Files");
+	    if (!pdfDir.exists()) {
+	        pdfDir.mkdir();
+	    }
 
-		try {
-			createPdf(filePath);
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+	    String timestamp = LocalDateTime.now().format(formatter);
+	    String filePath = System.getProperty("user.home") + "/Saved-PDF-Files/AmortizationSchedule_" + timestamp + ".pdf";
 
-			if (Desktop.isDesktopSupported()) {
-				File file = new File(filePath);
-				Desktop.getDesktop().open(file);
-			}
+	    try {
+	        createPdf(filePath);
 
-		} catch (DocumentException | IOException e) {
-			e.printStackTrace();
-		}
+	        if (Desktop.isDesktopSupported()) {
+	            File file = new File(filePath);
+	            Desktop.getDesktop().open(file);
+	        }
+
+	    } catch (DocumentException | IOException e) {
+	        e.printStackTrace();
+	    }
 	}
+
+
 
 	/**
 	 * Creates a PDF file containing the amortization schedule. The PDF includes a
