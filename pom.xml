@@ -15,6 +15,11 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.15.4</version> 
+		</dependency>
 
 		<!-- JUnit dependency -->
 		<dependency>

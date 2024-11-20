@@ -355,33 +355,34 @@ public class HomeController {
 	 */
 	@FXML
 	void CalculateButtonPressed(ActionEvent event) {
-		try {
-			double purchasePrice = Double.parseDouble(PurchasePriceField.getText().replaceAll("[^\\d.]", ""));
-			double downPayment = Double.parseDouble(DownPaymentField.getText().replaceAll("[^\\d.]", ""));
-			double interestRate = Double.parseDouble(InterestRateField.getText().replaceAll("[^\\d.]", ""));
-			double loanTerm = LoanDurationSelected.getValue();
+	    try {
+	        double purchasePrice = Double.parseDouble(PurchasePriceField.getText().replaceAll("[^\\d.]", ""));
+	        double downPayment = Double.parseDouble(DownPaymentField.getText().replaceAll("[^\\d.]", ""));
+	        double interestRate = Double.parseDouble(InterestRateField.getText().replaceAll("[^\\d.]", ""));
+	        double loanTerm = LoanDurationSelected.getValue();
 
-			double monthlyPayment = calculateMonthlyPayment(purchasePrice, downPayment, interestRate, loanTerm);
+	        double monthlyPayment = calculateMonthlyPayment(purchasePrice, downPayment, interestRate, loanTerm);
 
-			String zipCode = zipCodeField.getText();
-			double propertyTax = fetcher.fetchPropertyTax(zipCode);
-			double homeInsurance = fetcher.fetchHomeInsurance(zipCode);
+	        String zipCode = zipCodeField.getText();
+	        double propertyTax = fetcher.fetchPropertyTax(zipCode, purchasePrice);
+	        double homeInsurance = fetcher.fetchHomeInsurance(zipCode);
 
-			double totalPayment = calculateTotalPayment(monthlyPayment, propertyTax, homeInsurance);
+	        double totalPayment = calculateTotalPayment(monthlyPayment, propertyTax, homeInsurance);
 
-			populatePieChart(monthlyPayment, propertyTax, homeInsurance);
-			TotalPayment.setText(currencyFormat.format(totalPayment));
-			Tax.setText(currencyFormat.format(propertyTax));
-			HomeInsurance.setText(currencyFormat.format(homeInsurance));
+	        populatePieChart(monthlyPayment, propertyTax, homeInsurance);
+	        TotalPayment.setText(currencyFormat.format(totalPayment));
+	        Tax.setText(currencyFormat.format(propertyTax));
+	        HomeInsurance.setText(currencyFormat.format(homeInsurance));
 
-		} catch (NumberFormatException e) {
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Error");
-			alert.setHeaderText(null);
-			alert.setContentText("All Fields are required for calculations.");
-			alert.showAndWait();
-		}
+	    } catch (NumberFormatException e) {
+	        Alert alert = new Alert(Alert.AlertType.ERROR);
+	        alert.setTitle("Error");
+	        alert.setHeaderText(null);
+	        alert.setContentText("All Fields are required for calculations.");
+	        alert.showAndWait();
+	    }
 	}
+
 
 	/**
 	 * Clears all input fields and resets the form.
