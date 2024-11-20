@@ -13,5 +13,3 @@ Saved-PDF-Files/
 # Ignore OS-specific files
 .DS_Store
 
-target/
-target/
