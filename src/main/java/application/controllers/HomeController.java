@@ -20,8 +20,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import application.loaders.AmortizationScheduleLoader;
+import application.utils.HomeInsuranceCalculator;
 import application.utils.MortgageRateFetcher;
-import application.utils.PropertyTaxAndInsuranceFetcher;
+import application.utils.PropertyTaxFetcher;
 
 /**
  * Controller class for managing the home view of the mortgage calculator
@@ -34,7 +35,7 @@ public class HomeController {
 
 	private ToolbarController toolbarController = new ToolbarController();
 
-	private PropertyTaxAndInsuranceFetcher fetcher = new PropertyTaxAndInsuranceFetcher();
+	private PropertyTaxFetcher fetcher = new PropertyTaxFetcher();
 
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
 
@@ -83,11 +84,11 @@ public class HomeController {
 	@FXML
 	private TextField zipCodeField;
 
-	public PropertyTaxAndInsuranceFetcher getFetcher() {
+	public PropertyTaxFetcher getFetcher() {
 		return fetcher;
 	}
 
-	public void setFetcher(PropertyTaxAndInsuranceFetcher fetcher) {
+	public void setFetcher(PropertyTaxFetcher fetcher) {
 		this.fetcher = fetcher;
 	}
 
@@ -356,6 +357,7 @@ public class HomeController {
 	@FXML
 	void CalculateButtonPressed(ActionEvent event) {
 	    try {
+	        // Get user inputs for purchase price, down payment, interest rate, and loan term
 	        double purchasePrice = Double.parseDouble(PurchasePriceField.getText().replaceAll("[^\\d.]", ""));
 	        double downPayment = Double.parseDouble(DownPaymentField.getText().replaceAll("[^\\d.]", ""));
 	        double interestRate = Double.parseDouble(InterestRateField.getText().replaceAll("[^\\d.]", ""));
@@ -364,15 +366,25 @@ public class HomeController {
 	        double monthlyPayment = calculateMonthlyPayment(purchasePrice, downPayment, interestRate, loanTerm);
 
 	        String zipCode = zipCodeField.getText();
-	        double propertyTax = fetcher.fetchPropertyTax(zipCode, purchasePrice);
-	        double homeInsurance = fetcher.fetchHomeInsurance(zipCode);
+	        double propertyTax = 0.0;
+	        double homeInsurance = 0.0;
+
+	        try {
+	            propertyTax = fetcher.fetchPropertyTax(zipCode, purchasePrice);
+	            homeInsurance = HomeInsuranceCalculator.calculateHomeInsurance(purchasePrice);
+
+	            HomeInsurance.setText(currencyFormat.format(homeInsurance)); 
+	        } catch (Exception e) {
+	            System.err.println("Error fetching data: " + e.getMessage());
+	            e.printStackTrace();
+	        }
 
 	        double totalPayment = calculateTotalPayment(monthlyPayment, propertyTax, homeInsurance);
 
 	        populatePieChart(monthlyPayment, propertyTax, homeInsurance);
+
 	        TotalPayment.setText(currencyFormat.format(totalPayment));
 	        Tax.setText(currencyFormat.format(propertyTax));
-	        HomeInsurance.setText(currencyFormat.format(homeInsurance));
 
 	    } catch (NumberFormatException e) {
 	        Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -382,7 +394,6 @@ public class HomeController {
 	        alert.showAndWait();
 	    }
 	}
-
 
 	/**
 	 * Clears all input fields and resets the form.
