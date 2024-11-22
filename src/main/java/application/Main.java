@@ -22,18 +22,13 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            // Load the FXML file for the main view
             Parent root = FXMLLoader.load(getClass().getResource("/application/fxml/HomeView.fxml"));
-
-            // Create the scene and set it on the primary stage
             Scene scene = new Scene(root);
 
-            // Set up the stage properties
             primaryStage.setScene(scene);
             primaryStage.setTitle("Mortgage Match");
             primaryStage.show();
         } catch (Exception e) {
-            // Print the stack trace if an error occurs
             e.printStackTrace();
         }
     }

@@ -356,8 +356,7 @@ public class HomeController {
 	 */
 	@FXML
 	void CalculateButtonPressed(ActionEvent event) {
-	    try {
-	        // Get user inputs for purchase price, down payment, interest rate, and loan term
+	    try {	       
 	        double purchasePrice = Double.parseDouble(PurchasePriceField.getText().replaceAll("[^\\d.]", ""));
 	        double downPayment = Double.parseDouble(DownPaymentField.getText().replaceAll("[^\\d.]", ""));
 	        double interestRate = Double.parseDouble(InterestRateField.getText().replaceAll("[^\\d.]", ""));
